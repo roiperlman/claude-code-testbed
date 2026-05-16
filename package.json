@@ -1,0 +1,42 @@
+{
+  "name": "claude-code-testbed",
+  "version": "0.1.0",
+  "description": "Programmatic test harness for Claude Code plugins — spawns real Claude Code sessions under tmux",
+  "type": "module",
+  "exports": {
+    ".": "./lib.mjs",
+    "./jsonl": "./jsonl.mjs",
+    "./paths": "./paths.mjs",
+    "./registry": "./registry.mjs",
+    "./tmux": "./tmux.mjs"
+  },
+  "bin": {
+    "claude-code-testbed": "cli.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "files": [
+    "*.mjs",
+    "!vitest.config.mjs"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "Roi Perlman"
+  },
+  "keywords": [
+    "claude-code",
+    "claude-code-plugin",
+    "testbed",
+    "testing",
+    "tmux",
+    "e2e"
+  ],
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "vitest": "^1.6.0"
+  }
+}
