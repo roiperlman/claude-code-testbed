@@ -24,6 +24,10 @@
     "commands/",
     "scripts/"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/roiperlman/claude-code-testbed"
+  },
   "license": "MIT",
   "author": {
     "name": "Roi Perlman"
