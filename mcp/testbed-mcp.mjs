@@ -94,7 +94,7 @@ const TOOLS = [
 ];
 
 const server = new Server(
-  { name: 'claude-code-testbed', version: '0.1.0' },
+  { name: 'claude-code-testbed', version: '0.2.0' },
   { capabilities: { tools: {} } },
 );
 
