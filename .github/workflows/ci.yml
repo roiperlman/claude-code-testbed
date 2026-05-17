@@ -45,6 +45,6 @@ jobs:
           fi
       - name: Publish to npm
         if: steps.version_check.outputs.skip == 'false'
-        run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ''
+        run: |
+          npm config delete //registry.npmjs.org/:_authToken
+          npm publish --provenance --access public
