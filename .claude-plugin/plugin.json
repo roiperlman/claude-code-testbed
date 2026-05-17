@@ -1,0 +1,12 @@
+{
+  "name": "claude-code-testbed",
+  "version": "0.1.0",
+  "description": "Programmatic test harness for Claude Code plugins — spawns real Claude Code sessions under tmux.",
+  "author": { "name": "Roi Perlman" },
+  "mcpServers": {
+    "claude-code-testbed": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/mcp/testbed-mcp.mjs"]
+    }
+  }
+}
