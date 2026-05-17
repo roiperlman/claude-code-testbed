@@ -43,8 +43,14 @@ jobs:
           else
             echo "skip=false" >> $GITHUB_OUTPUT
           fi
-      - name: Publish to npm
+      - name: Debug publish env
         if: steps.version_check.outputs.skip == 'false'
         run: |
+          echo "npm: $(npm --version)"
+          echo "OIDC URL set: ${ACTIONS_ID_TOKEN_REQUEST_URL:+yes}"
+          echo "NPM_CONFIG_USERCONFIG: ${NPM_CONFIG_USERCONFIG}"
           sed -i '/_authToken/d' "${NPM_CONFIG_USERCONFIG}"
-          npm publish --provenance --access public
+          echo "npmrc after sed:"; cat "${NPM_CONFIG_USERCONFIG}"
+      - name: Publish to npm
+        if: steps.version_check.outputs.skip == 'false'
+        run: npm publish --provenance --access public
