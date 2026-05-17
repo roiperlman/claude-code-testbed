@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { readRegistry, addSession, removeSession, pruneRegistry } from '../registry.mjs';
+import { readRegistry, addSession, removeSession, pruneRegistry } from '../src/registry.mjs';
 
 /** @type {string} */
 let tmpDir;

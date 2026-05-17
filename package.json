@@ -4,21 +4,20 @@
   "description": "Programmatic test harness for Claude Code plugins — spawns real Claude Code sessions under tmux",
   "type": "module",
   "exports": {
-    ".": "./lib.mjs",
-    "./jsonl": "./jsonl.mjs",
-    "./paths": "./paths.mjs",
-    "./registry": "./registry.mjs",
-    "./tmux": "./tmux.mjs"
+    ".": "./src/index.mjs",
+    "./jsonl": "./src/jsonl.mjs",
+    "./paths": "./src/paths.mjs",
+    "./registry": "./src/registry.mjs",
+    "./tmux": "./src/tmux.mjs"
   },
   "bin": {
-    "claude-code-testbed": "cli.mjs"
+    "claude-code-testbed": "src/cli.mjs"
   },
   "engines": {
     "node": ">=20"
   },
   "files": [
-    "*.mjs",
-    "!vitest.config.mjs"
+    "src/**/*.mjs"
   ],
   "license": "MIT",
   "author": {

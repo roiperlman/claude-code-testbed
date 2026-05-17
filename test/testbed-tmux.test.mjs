@@ -11,7 +11,7 @@ vi.mock('node:child_process', () => ({
   ) => execFileMock(file, args, opts, cb),
 }));
 
-const tmux = await import('../tmux.mjs');
+const tmux = await import('../src/tmux.mjs');
 
 beforeEach(() => {
   execFileMock.mockReset();

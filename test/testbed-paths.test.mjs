@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import os from 'node:os';
 import path from 'node:path';
-import { encodeProjectDir, jsonlPath, cacheDir, stateFilePath } from '../paths.mjs';
+import { encodeProjectDir, jsonlPath, cacheDir, stateFilePath } from '../src/paths.mjs';
 
 describe('encodeProjectDir', () => {
   it('replaces every / with -', () => {

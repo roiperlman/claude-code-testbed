@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import * as lib from './lib.mjs';
+import * as lib from './index.mjs';
 
 const HELP = `Usage: testbed <command> [options]
 

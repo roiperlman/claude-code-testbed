@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { parseLines, readEvents, tailFile, waitIdle } from '../jsonl.mjs';
+import { parseLines, readEvents, tailFile, waitIdle } from '../src/jsonl.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const fixturesDir = resolve(here, 'fixtures');
