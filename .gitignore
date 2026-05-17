@@ -2,3 +2,12 @@ node_modules/
 coverage/
 .DS_Store
 *.log
+
+# Internal planning docs
+docs/superpowers/
+
+# Local Claude Code state — never publish
+.claude/settings.local.json
+.claude/commands/
+.claude/skills/
+.claude/scheduled_tasks.lock
