@@ -17,7 +17,12 @@
     "node": ">=20"
   },
   "files": [
-    "src/**/*.mjs"
+    "src/**/*.mjs",
+    ".claude-plugin/",
+    "mcp/",
+    "skills/",
+    "commands/",
+    "scripts/"
   ],
   "license": "MIT",
   "author": {
