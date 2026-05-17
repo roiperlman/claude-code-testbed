@@ -48,4 +48,7 @@ jobs:
         run: |
           sed -i '/_authToken/d' "${NPM_CONFIG_USERCONFIG}"
           unset NODE_AUTH_TOKEN
-          npm publish --provenance --access public
+          npm publish --provenance --access public || true
+          echo "=== npm debug log ==="
+          cat /home/runner/.npm/_logs/*.log 2>/dev/null | tail -60
+          exit 1
