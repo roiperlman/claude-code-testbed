@@ -24,6 +24,7 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     needs: test
     runs-on: ubuntu-latest
+    environment: npm
     permissions:
       contents: read
       id-token: write
