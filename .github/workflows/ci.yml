@@ -45,4 +45,6 @@ jobs:
           fi
       - name: Publish to npm
         if: steps.version_check.outputs.skip == 'false'
-        run: npm publish --provenance --access public
+        run: |
+          sed -i '/_authToken/d' "${NPM_CONFIG_USERCONFIG}"
+          env -u NODE_AUTH_TOKEN npm publish --provenance --access public
