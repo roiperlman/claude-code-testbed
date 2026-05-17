@@ -25,6 +25,16 @@ Under the hood it manages tmux sessions and the Claude Code JSONL transcript for
 npm install -D claude-code-testbed
 ```
 
+## Install as Claude Code plugin
+
+For live, in-conversation debugging of a plugin you're developing — instead of (or alongside) using the npm library in tests:
+
+```bash
+/plugin install github:roiperlman/claude-code-testbed
+```
+
+Then run `/claude-code-testbed:setup` to verify prerequisites. The plugin registers an MCP server with tools (`start`, `slash`, `wait_idle`, `events`, `kill`, etc.) for driving live testbed sessions from inside Claude Code.
+
 ## API
 
 ```js
