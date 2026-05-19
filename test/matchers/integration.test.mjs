@@ -45,3 +45,60 @@ describe('toHaveCalledTool', () => {
     await expect({ id: 'fake', __events: events }).not.toHaveCalledTool('Bash', undefined, { wait: false });
   });
 });
+
+describe('toHaveToolResult', () => {
+  test('matches a successful result content', async () => {
+    const events = await fixture('edit-success');
+    await expect({ id: 'fake', __events: events }).toHaveToolResult('Edit', /edited successfully/i, { wait: false });
+  });
+
+  test('fails when no result matches', async () => {
+    const events = await fixture('edit-success');
+    await expect(
+      expect({ id: 'fake', __events: events }).toHaveToolResult('Edit', /failed/, { wait: false })
+    ).rejects.toThrow(/toHaveToolResult/);
+  });
+
+  test('matches errored result', async () => {
+    const events = await fixture('errored');
+    await expect({ id: 'fake', __events: events }).toHaveToolResult('Read', /ENOENT/, { wait: false });
+  });
+});
+
+describe('toHaveAssistantText', () => {
+  test('matches string substring via regex', async () => {
+    const events = await fixture('edit-success');
+    await expect({ id: 'fake', __events: events }).toHaveAssistantText(/header added/i, { wait: false });
+  });
+
+  test('matches any of multiple texts', async () => {
+    const events = await fixture('edit-success');
+    await expect({ id: 'fake', __events: events }).toHaveAssistantText(/edit foo/i, { wait: false });
+  });
+
+  test('fails when no assistant text matches', async () => {
+    const events = await fixture('edit-success');
+    await expect(
+      expect({ id: 'fake', __events: events }).toHaveAssistantText(/never said this/, { wait: false })
+    ).rejects.toThrow(/toHaveAssistantText/);
+  });
+});
+
+describe('toHaveUserMessage', () => {
+  test('matches a typed user message', async () => {
+    const events = await fixture('edit-success');
+    await expect({ id: 'fake', __events: events }).toHaveUserMessage(/edit foo\.mjs/, { wait: false });
+  });
+
+  test('captures slash command as user message', async () => {
+    const events = await fixture('slash-cmd');
+    await expect({ id: 'fake', __events: events }).toHaveUserMessage(/^\/test-cmd/, { wait: false });
+  });
+
+  test('fails when no user message matches', async () => {
+    const events = await fixture('edit-success');
+    await expect(
+      expect({ id: 'fake', __events: events }).toHaveUserMessage('not in transcript', { wait: false })
+    ).rejects.toThrow(/toHaveUserMessage/);
+  });
+});
