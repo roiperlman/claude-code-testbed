@@ -8,4 +8,7 @@ expect.extend({
   toHaveUserMessage: M.toHaveUserMessage,
   toHaveTouchedFile: M.toHaveTouchedFile,
   toHaveReachedIdle: M.toHaveReachedIdle,
+  toHaveErrored: M.toHaveErrored,
+  toHavePaneText: M.toHavePaneText,
+  toHaveEvent: M.toHaveEvent,
 });

@@ -1,6 +1,6 @@
-import { events as libEvents, waitIdle as libWaitIdle } from '../index.mjs';
+import { events as libEvents, waitIdle as libWaitIdle, pane as libPane } from '../index.mjs';
 import { withAutoWait, matches, sessionId } from './wait.mjs';
-import { findToolCalls, findToolResults, findAssistantTexts, findUserMessages } from './events.mjs';
+import { findToolCalls, findToolResults, findAssistantTexts, findUserMessages, findErrors } from './events.mjs';
 import { checkTouchedFile } from './files.mjs';
 
 /**
@@ -161,5 +161,66 @@ export async function toHaveReachedIdle(received, opts) {
       : `toHaveReachedIdle: expected idle within ${within}ms, took ${elapsed}ms`,
     actual: elapsed,
     expected: within,
+  };
+}
+
+async function readPane(sessionOrId, opts) {
+  if (sessionOrId && typeof sessionOrId === 'object' && typeof sessionOrId.__pane === 'string') {
+    return sessionOrId.__pane;
+  }
+  return libPane(sessionId(sessionOrId), { lines: opts?.lines });
+}
+
+/**
+ * toHaveErrored(matcher?, opts?)
+ */
+export async function toHaveErrored(received, matcher, opts) {
+  const events = await withAutoWait(received, opts, async () => readEvents(received));
+  const errs = findErrors(events);
+  const filtered = matcher === undefined ? errs : errs.filter((e) => matches(e.content, matcher));
+  const pass = filtered.length > 0;
+  return {
+    pass,
+    message: () => pass
+      ? `expected NOT to have errored, but found ${filtered.length} error(s)`
+      : `toHaveErrored: expected at least one error${matcher !== undefined ? ` matching ${fmt(matcher)}` : ''}, found ${errs.length} error(s)`,
+    actual: filtered,
+    expected: matcher,
+  };
+}
+
+/**
+ * toHavePaneText(matcher, { lines?, wait?, timeoutMs? })
+ */
+export async function toHavePaneText(received, matcher, opts) {
+  await withAutoWait(received, opts, async () => {});
+  const text = await readPane(received, opts);
+  const pass = matches(text, matcher);
+  return {
+    pass,
+    message: () => pass
+      ? `expected pane NOT to match ${fmt(matcher)}`
+      : `toHavePaneText: expected pane text to match ${fmt(matcher)}\nPane (truncated):\n${text.slice(-500)}`,
+    actual: text,
+    expected: matcher,
+  };
+}
+
+/**
+ * toHaveEvent(predicate, opts?)
+ *
+ * `predicate` is anything `matches()` accepts (typically a function or object).
+ */
+export async function toHaveEvent(received, predicate, opts) {
+  const events = await withAutoWait(received, opts, async () => readEvents(received));
+  const matching = events.filter((e) => matches(e, predicate));
+  const pass = matching.length > 0;
+  return {
+    pass,
+    message: () => pass
+      ? `expected NOT to have event matching ${fmt(predicate)}, found ${matching.length}`
+      : `toHaveEvent: expected event matching ${fmt(predicate)}, found ${matching.length}\nLast events: ${fmt(lastFew(events))}`,
+    actual: matching,
+    expected: predicate,
   };
 }

@@ -154,3 +154,57 @@ describe('toHaveReachedIdle', () => {
     ).rejects.toThrow(/toHaveReachedIdle/);
   });
 });
+
+describe('toHaveErrored', () => {
+  test('passes when fixture has an errored tool_result', async () => {
+    const events = await fixture('errored');
+    await expect({ id: 'fake', __events: events }).toHaveErrored(undefined, { wait: false });
+  });
+
+  test('matcher filters by error content', async () => {
+    const events = await fixture('errored');
+    await expect({ id: 'fake', __events: events }).toHaveErrored(/ENOENT/, { wait: false });
+  });
+
+  test('fails when clean', async () => {
+    const events = await fixture('edit-success');
+    await expect(
+      expect({ id: 'fake', __events: events }).toHaveErrored(undefined, { wait: false })
+    ).rejects.toThrow(/toHaveErrored/);
+  });
+});
+
+describe('toHavePaneText', () => {
+  test('matches via __pane hook (regex)', async () => {
+    await expect({ id: 'fake', __events: [], __pane: 'foo bar baz' }).toHavePaneText(/bar/, { wait: false });
+  });
+
+  test('matches via __pane hook (string substring is NOT done — strict eq)', async () => {
+    await expect({ id: 'fake', __events: [], __pane: 'exact' }).toHavePaneText('exact', { wait: false });
+  });
+
+  test('fails when no match', async () => {
+    await expect(
+      expect({ id: 'fake', __events: [], __pane: 'foo' }).toHavePaneText(/bar/, { wait: false })
+    ).rejects.toThrow(/toHavePaneText/);
+  });
+});
+
+describe('toHaveEvent', () => {
+  test('predicate fn', async () => {
+    const events = await fixture('edit-success');
+    await expect({ id: 'fake', __events: events }).toHaveEvent((e) => e.type === 'assistant', { wait: false });
+  });
+
+  test('object partial match', async () => {
+    const events = await fixture('edit-success');
+    await expect({ id: 'fake', __events: events }).toHaveEvent({ type: 'user' }, { wait: false });
+  });
+
+  test('fails when nothing matches', async () => {
+    const events = await fixture('edit-success');
+    await expect(
+      expect({ id: 'fake', __events: events }).toHaveEvent({ type: 'no-such-type' }, { wait: false })
+    ).rejects.toThrow(/toHaveEvent/);
+  });
+});
