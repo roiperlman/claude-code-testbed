@@ -2,6 +2,8 @@ import { events as libEvents, waitIdle as libWaitIdle, pane as libPane } from '.
 import { withAutoWait, matches, sessionId } from './wait.mjs';
 import { findToolCalls, findToolResults, findAssistantTexts, findUserMessages, findErrors } from './events.mjs';
 import { checkTouchedFile } from './files.mjs';
+import { normalizeTranscript } from './snapshot.mjs';
+import { expect as vitestExpect } from 'vitest';
 
 /**
  * Hook for tests: if the session-like input has `__events`, use those
@@ -222,5 +224,30 @@ export async function toHaveEvent(received, predicate, opts) {
       : `toHaveEvent: expected event matching ${fmt(predicate)}, found ${matching.length}\nLast events: ${fmt(lastFew(events))}`,
     actual: matching,
     expected: predicate,
+  };
+}
+
+/**
+ * toMatchTranscriptSnapshot({ normalize?, wait?, timeoutMs? })
+ *
+ * Compares the normalized transcript against a stored snapshot using
+ * Vitest's built-in snapshot machinery.
+ */
+export async function toMatchTranscriptSnapshot(received, opts) {
+  const events = await withAutoWait(received, opts, async () => readEvents(received));
+  const normalize = opts?.normalize;
+  /** @type {Record<string, unknown>[]} */
+  let normalized;
+  if (normalize === false) {
+    normalized = events;
+  } else if (typeof normalize === 'function') {
+    normalized = normalize(events);
+  } else {
+    normalized = normalizeTranscript(events);
+  }
+  vitestExpect(normalized).toMatchSnapshot();
+  return {
+    pass: true,
+    message: () => 'transcript snapshot matched',
   };
 }

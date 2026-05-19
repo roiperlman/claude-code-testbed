@@ -1,0 +1,94 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`toMatchTranscriptSnapshot > { normalize: false } snapshots raw events (less stable, but supported) 1`] = `
+[
+  {
+    "message": {
+      "content": [
+        {
+          "text": "hello",
+          "type": "text",
+        },
+      ],
+    },
+    "type": "assistant",
+  },
+]
+`;
+
+exports[`toMatchTranscriptSnapshot > custom normalizer fn is honored 1`] = `
+[
+  {
+    "type": "user",
+  },
+  {
+    "type": "assistant",
+  },
+  {
+    "type": "user",
+  },
+  {
+    "type": "assistant",
+  },
+]
+`;
+
+exports[`toMatchTranscriptSnapshot > snapshots the normalized transcript 1`] = `
+[
+  {
+    "message": {
+      "content": "edit foo.mjs to add a header",
+      "role": "user",
+    },
+    "type": "user",
+  },
+  {
+    "message": {
+      "content": [
+        {
+          "text": "<text>",
+          "type": "text",
+        },
+        {
+          "input": {
+            "file_path": "/abs/cwd/foo.mjs",
+            "new_string": "// header
+hello",
+            "old_string": "hello",
+          },
+          "name": "Edit",
+          "type": "tool_use",
+        },
+      ],
+      "role": "assistant",
+    },
+    "type": "assistant",
+  },
+  {
+    "message": {
+      "content": [
+        {
+          "content": "File edited successfully",
+          "is_error": false,
+          "tool_use_id": "tu_1",
+          "type": "tool_result",
+        },
+      ],
+      "role": "user",
+    },
+    "type": "user",
+  },
+  {
+    "message": {
+      "content": [
+        {
+          "text": "<text>",
+          "type": "text",
+        },
+      ],
+      "role": "assistant",
+    },
+    "type": "assistant",
+  },
+]
+`;

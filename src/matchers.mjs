@@ -11,4 +11,5 @@ expect.extend({
   toHaveErrored: M.toHaveErrored,
   toHavePaneText: M.toHavePaneText,
   toHaveEvent: M.toHaveEvent,
+  toMatchTranscriptSnapshot: M.toMatchTranscriptSnapshot,
 });

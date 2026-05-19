@@ -208,3 +208,24 @@ describe('toHaveEvent', () => {
     ).rejects.toThrow(/toHaveEvent/);
   });
 });
+
+describe('toMatchTranscriptSnapshot', () => {
+  test('snapshots the normalized transcript', async () => {
+    const events = await fixture('edit-success');
+    await expect({ id: 'fake', __events: events }).toMatchTranscriptSnapshot({ wait: false });
+  });
+
+  test('{ normalize: false } snapshots raw events (less stable, but supported)', async () => {
+    // Use a tiny fixed transcript so vitest's snapshot is deterministic.
+    const events = [{ type: 'assistant', message: { content: [{ type: 'text', text: 'hello' }] } }];
+    await expect({ id: 'fake', __events: events }).toMatchTranscriptSnapshot({ normalize: false, wait: false });
+  });
+
+  test('custom normalizer fn is honored', async () => {
+    const events = await fixture('edit-success');
+    await expect({ id: 'fake', __events: events }).toMatchTranscriptSnapshot({
+      normalize: (es) => es.map((e) => ({ type: e.type })),
+      wait: false,
+    });
+  });
+});
