@@ -1,0 +1,4 @@
+{"type":"user","message":{"role":"user","content":"read /nonexistent.txt"},"timestamp":"2026-05-19T10:00:00.000Z","session_id":"sess-err","id":"u1"}
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","id":"tu_e","name":"Read","input":{"file_path":"/nonexistent.txt"}}]},"timestamp":"2026-05-19T10:00:01.000Z","session_id":"sess-err","id":"a1"}
+{"type":"user","message":{"role":"user","content":[{"type":"tool_result","tool_use_id":"tu_e","content":"ENOENT: no such file or directory","is_error":true}]},"timestamp":"2026-05-19T10:00:02.000Z","session_id":"sess-err","id":"u2"}
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"text","text":"That file doesn't exist."}]},"timestamp":"2026-05-19T10:00:03.000Z","session_id":"sess-err","id":"a2"}

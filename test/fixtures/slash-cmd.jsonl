@@ -1,0 +1,2 @@
+{"type":"user","message":{"role":"user","content":"/test-cmd arg1"},"timestamp":"2026-05-19T10:00:00.000Z","session_id":"sess-slash","id":"u1"}
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"text","text":"Running /test-cmd with arg1."}]},"timestamp":"2026-05-19T10:00:01.000Z","session_id":"sess-slash","id":"a1"}
