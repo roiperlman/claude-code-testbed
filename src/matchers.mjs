@@ -6,4 +6,6 @@ expect.extend({
   toHaveToolResult: M.toHaveToolResult,
   toHaveAssistantText: M.toHaveAssistantText,
   toHaveUserMessage: M.toHaveUserMessage,
+  toHaveTouchedFile: M.toHaveTouchedFile,
+  toHaveReachedIdle: M.toHaveReachedIdle,
 });

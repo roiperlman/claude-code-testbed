@@ -1,6 +1,7 @@
-import { events as libEvents } from '../index.mjs';
+import { events as libEvents, waitIdle as libWaitIdle } from '../index.mjs';
 import { withAutoWait, matches, sessionId } from './wait.mjs';
 import { findToolCalls, findToolResults, findAssistantTexts, findUserMessages } from './events.mjs';
+import { checkTouchedFile } from './files.mjs';
 
 /**
  * Hook for tests: if the session-like input has `__events`, use those
@@ -110,5 +111,55 @@ export async function toHaveUserMessage(received, matcher, opts) {
       : `toHaveUserMessage: expected user message matching ${fmt(matcher)}, found ${msgs.length} message(s)\nMessages: ${fmt(msgs)}`,
     actual: matching,
     expected: matcher,
+  };
+}
+
+/**
+ * toHaveTouchedFile(path, { created?, content?, wait?, timeoutMs? })
+ */
+export async function toHaveTouchedFile(received, path, opts) {
+  await withAutoWait(received, opts, async () => {}); // wait only
+  const r = await checkTouchedFile(path, opts ?? {});
+  return {
+    pass: r.pass,
+    message: () => r.pass
+      ? `expected NOT touched: ${r.reason}`
+      : `toHaveTouchedFile: ${r.reason}`,
+    actual: r.actual,
+    expected: { path, ...opts },
+  };
+}
+
+/**
+ * toHaveReachedIdle({ within?, wait?, timeoutMs? })
+ *
+ * `within` measures the time spent waiting (default infinite within timeoutMs).
+ * Note: `wait: false` is meaningless here because the matcher's entire job
+ * is to wait. We treat it as a no-op for consistency.
+ */
+export async function toHaveReachedIdle(received, opts) {
+  const within = opts?.within ?? Infinity;
+  const waitFn = (received && received.__waitIdle) ?? libWaitIdle;
+  const id = sessionId(received);
+  const start = Date.now();
+  try {
+    await waitFn(id, { timeoutMs: opts?.timeoutMs ?? 60_000 });
+  } catch (err) {
+    return {
+      pass: false,
+      message: () => `toHaveReachedIdle: waitIdle threw: ${err.message}`,
+      actual: err.message,
+      expected: { within },
+    };
+  }
+  const elapsed = Date.now() - start;
+  const pass = elapsed <= within;
+  return {
+    pass,
+    message: () => pass
+      ? `expected NOT to reach idle within ${within}ms, but did in ${elapsed}ms`
+      : `toHaveReachedIdle: expected idle within ${within}ms, took ${elapsed}ms`,
+    actual: elapsed,
+    expected: within,
   };
 }

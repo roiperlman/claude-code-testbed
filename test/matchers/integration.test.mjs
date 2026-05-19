@@ -1,5 +1,7 @@
 import { describe, test, expect } from 'vitest';
-import { readFile } from 'node:fs/promises';
+import { readFile, mkdtemp, writeFile, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { parseLines } from '../../src/jsonl.mjs';
 import '../../src/matchers.mjs';
 
@@ -100,5 +102,55 @@ describe('toHaveUserMessage', () => {
     await expect(
       expect({ id: 'fake', __events: events }).toHaveUserMessage('not in transcript', { wait: false })
     ).rejects.toThrow(/toHaveUserMessage/);
+  });
+});
+
+describe('toHaveTouchedFile', () => {
+  test('passes when file exists', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'm-'));
+    try {
+      const p = join(dir, 'x.txt');
+      await writeFile(p, 'data');
+      await expect({ id: 'fake', __events: [] }).toHaveTouchedFile(p, { wait: false });
+    } finally { await rm(dir, { recursive: true, force: true }); }
+  });
+
+  test('content matcher', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'm-'));
+    try {
+      const p = join(dir, 'x.txt');
+      await writeFile(p, 'hello');
+      await expect({ id: 'fake', __events: [] }).toHaveTouchedFile(p, { content: /hello/, wait: false });
+    } finally { await rm(dir, { recursive: true, force: true }); }
+  });
+
+  test('fails when file missing', async () => {
+    await expect(
+      expect({ id: 'fake', __events: [] }).toHaveTouchedFile('/nonexistent/missing.txt', { wait: false })
+    ).rejects.toThrow(/toHaveTouchedFile/);
+  });
+});
+
+describe('toHaveReachedIdle', () => {
+  test('passes by default if waitIdle resolves (we stub via __waitIdle hook)', async () => {
+    await expect({ id: 'fake', __events: [], __waitIdle: async () => {} }).toHaveReachedIdle();
+  });
+
+  test('within: must complete under N ms', async () => {
+    const start = Date.now();
+    await expect({
+      id: 'fake', __events: [],
+      __waitIdle: async () => new Promise((r) => setTimeout(r, 50)),
+    }).toHaveReachedIdle({ within: 1000 });
+    expect(Date.now() - start).toBeLessThan(1000);
+  });
+
+  test('within: fails if too slow', async () => {
+    await expect(
+      expect({
+        id: 'fake', __events: [],
+        __waitIdle: async () => new Promise((r) => setTimeout(r, 200)),
+      }).toHaveReachedIdle({ within: 50 })
+    ).rejects.toThrow(/toHaveReachedIdle/);
   });
 });
