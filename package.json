@@ -1,10 +1,11 @@
 {
   "name": "claude-code-testbed",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Programmatic test harness for Claude Code plugins — spawns real Claude Code sessions under tmux",
   "type": "module",
   "exports": {
     ".": "./src/index.mjs",
+    "./matchers": "./src/matchers.mjs",
     "./jsonl": "./src/jsonl.mjs",
     "./paths": "./src/paths.mjs",
     "./registry": "./src/registry.mjs",
@@ -49,5 +50,11 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0"
+  },
+  "peerDependencies": {
+    "vitest": ">=1"
+  },
+  "peerDependenciesMeta": {
+    "vitest": { "optional": true }
   }
 }

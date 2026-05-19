@@ -90,6 +90,55 @@ Kill the tmux session and remove it from the registry. Idempotent.
 
 List sessions from the registry, pruning any whose tmux session no longer exists.
 
+## Assertions
+
+A slim set of 10 Vitest custom matchers for asserting on a recorded session. Register them once in your Vitest config:
+
+```js
+// vitest.config.mjs
+export default {
+  test: {
+    setupFiles: ['claude-code-testbed/matchers'],
+  },
+};
+```
+
+Then in any test:
+
+```js
+import { start, send, kill } from 'claude-code-testbed';
+import { expect, test, afterEach } from 'vitest';
+
+let session;
+afterEach(() => session && kill(session.id));
+
+test('agent edits foo.mjs', async () => {
+  session = await start();
+  await send(session.id, 'edit foo.mjs to add a header');
+
+  await expect(session).toHaveCalledTool('Edit', { input: { file_path: /foo\.mjs/ } });
+  await expect(session).toHaveTouchedFile('foo.mjs', { content: /header/ });
+  await expect(session).toHaveReachedIdle({ within: 30_000 });
+});
+```
+
+All matchers auto-wait for the session to reach idle before reading; pass `{ wait: false }` to opt out. All support `.not`.
+
+| Matcher | Purpose |
+|---------|---------|
+| `toHaveCalledTool(name, inputMatcher?, { times?, wait?, timeoutMs? })` | Tool was invoked (optionally N times, with matching input) |
+| `toHaveToolResult(name, resultMatcher, opts?)` | Tool returned matching content |
+| `toHaveAssistantText(matcher, opts?)` | Agent text matches |
+| `toHaveUserMessage(matcher, opts?)` | User input (or slash command) matches |
+| `toHaveTouchedFile(path, { created?, content?, ... })` | Disk file matches (reads disk, not events) |
+| `toHaveReachedIdle({ within?, ... })` | Session became idle (optionally within N ms) |
+| `toHaveErrored(matcher?, opts?)` | Any error event present |
+| `toHavePaneText(matcher, { lines?, ... })` | Tmux pane scrollback matches |
+| `toHaveEvent(predicate, opts?)` | Escape hatch — any JSONL event matches |
+| `toMatchTranscriptSnapshot({ normalize? })` | Semantic snapshot (timestamps/ids/text stripped) |
+
+Matchers accept either the `{ id, ... }` object from `start()` or a bare `id` string. Input matchers accept string (strict equality), `RegExp` (test), object (deep partial), or function `(value) => boolean`.
+
 ## CLI
 
 ```bash
