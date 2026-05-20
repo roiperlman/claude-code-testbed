@@ -92,6 +92,8 @@ List sessions from the registry, pruning any whose tmux session no longer exists
 
 ## Assertions
 
+> Requires `claude-code-testbed@^0.3.0`
+
 A slim set of 10 Vitest custom matchers for asserting on a recorded session. Register them once in your Vitest config:
 
 ```js
