@@ -1,6 +1,6 @@
 {
   "name": "claude-code-testbed",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Programmatic test harness for Claude Code plugins — spawns real Claude Code sessions under tmux",
   "type": "module",
   "exports": {
@@ -12,7 +12,8 @@
     "./tmux": "./src/tmux.mjs"
   },
   "bin": {
-    "claude-code-testbed": "src/cli.mjs"
+    "claude-code-testbed": "src/cli.mjs",
+    "claude-code-testbed-mcp": "mcp/testbed-mcp.mjs"
   },
   "engines": {
     "node": ">=20"
