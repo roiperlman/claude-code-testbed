@@ -4,7 +4,7 @@ import * as lib from './index.mjs';
 const HELP = `Usage: testbed <command> [options]
 
 Commands:
-  start [--project DIR] [--plugin-dir DIR] [--model M] [--no-bare] [--name N]
+  start [--project DIR] [--plugin-dir DIR] [--model M] [--bare] [--name N]
                                   Spawn a fresh Claude Code session
   send <id> "<text>"              Send a user message
   slash <id> "<cmd>"              Send a slash command
@@ -73,7 +73,7 @@ async function cmdStart(rest) {
     projectDir: typeof flags.project === 'string' ? flags.project : undefined,
     pluginDir: typeof flags['plugin-dir'] === 'string' ? flags['plugin-dir'] : undefined,
     model: typeof flags.model === 'string' ? flags.model : undefined,
-    bare: !flags['no-bare'],
+    bare: Boolean(flags.bare),
     name: typeof flags.name === 'string' ? flags.name : undefined,
   });
   process.stdout.write(`${result.id}\n`);

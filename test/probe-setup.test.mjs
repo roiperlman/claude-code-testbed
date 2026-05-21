@@ -69,23 +69,32 @@ describe('checkApiKey', () => {
 });
 
 describe('runProbe', () => {
-  it('aggregates checks and reports summary.ok=true when all pass', async () => {
+  it('aggregates checks and reports summary.ok=true when tmux + claude are present', async () => {
+    mockOk('tmux 3.4\n');
+    mockOk('1.2.3\n');
+    // ANTHROPIC_API_KEY unset — not required for the default bare:false mode
+    const result = await probe.runProbe();
+    expect(result.tmux.available).toBe(true);
+    expect(result.claude.available).toBe(true);
+    expect(result.anthropicApiKey.set).toBe(false);
+    expect(result.summary).toEqual({ ok: true, missing: [] });
+  });
+
+  it('reports the API key when set, but it is never required', async () => {
     mockOk('tmux 3.4\n');
     mockOk('1.2.3\n');
     process.env.ANTHROPIC_API_KEY = 'sk-test';
     const result = await probe.runProbe();
-    expect(result.tmux.available).toBe(true);
-    expect(result.claude.available).toBe(true);
     expect(result.anthropicApiKey.set).toBe(true);
     expect(result.summary).toEqual({ ok: true, missing: [] });
   });
 
-  it('lists missing pieces in summary.missing', async () => {
+  it('lists missing pieces in summary.missing (API key excluded)', async () => {
     mockEnoent(); // tmux missing
     mockOk('1.2.3\n'); // claude ok
-    // ANTHROPIC_API_KEY unset
+    // ANTHROPIC_API_KEY unset — must NOT appear in missing
     const result = await probe.runProbe();
     expect(result.summary.ok).toBe(false);
-    expect(result.summary.missing).toEqual(['tmux', 'anthropicApiKey']);
+    expect(result.summary.missing).toEqual(['tmux']);
   });
 });

@@ -39,7 +39,8 @@ export async function runProbe() {
   const missing = [];
   if (!tmux.available) missing.push('tmux');
   if (!claude.available) missing.push('claude');
-  if (!anthropicApiKey.set) missing.push('anthropicApiKey');
+  // ANTHROPIC_API_KEY is reported for visibility but not required: the default
+  // bare:false mode inherits the host's existing Claude Code login.
   return {
     tmux,
     claude,

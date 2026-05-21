@@ -17,7 +17,7 @@ const TOOLS = [
         project_dir: { type: 'string', description: 'Directory Claude Code opens. Defaults to cwd.' },
         plugin_dir: { type: 'string', description: 'Directory containing .claude-plugin/. Defaults to project_dir.' },
         model: { type: 'string', description: 'Host model. Default "haiku".' },
-        bare: { type: 'boolean', description: 'true requires ANTHROPIC_API_KEY; false uses OAuth. Default true.' },
+        bare: { type: 'boolean', description: 'true forces ANTHROPIC_API_KEY-only auth (claude --bare); false (default) inherits your existing Claude Code login.' },
         name: { type: 'string', description: 'Human label for the session.' },
       },
     },
