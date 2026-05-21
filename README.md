@@ -6,18 +6,19 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node ≥20](https://img.shields.io/node/v/claude-code-testbed)](https://nodejs.org)
 
-When you build a Claude Code plugin, the agent writing your code *is* Claude Code. `claude-code-testbed` closes that loop: it lets Claude Code spin up a fresh Claude Code session, send it messages and slash commands, and read back the full JSONL transcript — so the agent can test its own plugin without a human in the loop.
+When you build a Claude Code plugin, the agent writing your code *is* Claude Code. `claude-code-testbed` closes that loop: it lets Claude Code spin up a fresh, fully authenticated Claude Code session, drive it with messages and slash commands, and read back the complete JSONL transcript — so the agent can test its own plugin end-to-end, with no human in the loop.
 
-This is the key insight behind the package: Claude Code can develop a Claude Code integration and verify it end-to-end in the same session, autonomously. Write a plugin, run the testbed, assert on the transcript, iterate — all without ever asking a human to open a terminal and check the output.
+Write a plugin, run the testbed, assert on the transcript, iterate — all in the same session, without ever asking a human to open a terminal and check the output.
 
 Under the hood it manages tmux sessions and the Claude Code JSONL transcript format, and exposes a small JS API for driving sessions from Vitest (or any test runner).
 
 ## Prerequisites
 
-- Node ≥ 20
-- tmux (`brew install tmux` on macOS, `sudo apt-get install tmux` on Debian/Ubuntu)
-- [Claude Code CLI](https://github.com/anthropics/claude-code) (`claude` on PATH)
-- `ANTHROPIC_API_KEY` set in your environment (for `bare: true`, the default)
+- **Node ≥ 20**
+- **tmux** — `brew install tmux` (macOS) or `sudo apt-get install tmux` (Debian/Ubuntu)
+- **[Claude Code CLI](https://github.com/anthropics/claude-code)**, installed and authenticated — `claude` must be on your `PATH` and already logged in
+
+That's it. **No API key required.** Spawned sessions reuse whatever login your `claude` CLI already has — your Pro/Max subscription or an API key, whichever you normally use. See [Authentication](#authentication) for details.
 
 ## Install
 
@@ -25,15 +26,40 @@ Under the hood it manages tmux sessions and the Claude Code JSONL transcript for
 npm install -D claude-code-testbed
 ```
 
-## Install as Claude Code plugin
+## Install as a Claude Code plugin
 
-For live, in-conversation debugging of a plugin you're developing — instead of (or alongside) using the npm library in tests:
+For live, in-conversation debugging of a plugin you're developing — instead of (or alongside) the npm library in tests:
 
 ```bash
 /plugin install github:roiperlman/claude-code-testbed
 ```
 
-Then run `/claude-code-testbed:setup` to verify prerequisites. The plugin registers an MCP server with tools (`start`, `slash`, `wait_idle`, `events`, `kill`, etc.) for driving live testbed sessions from inside Claude Code.
+Then run `/claude-code-testbed:setup` to verify prerequisites. The plugin registers an MCP server with tools (`start`, `slash`, `wait_idle`, `events`, `kill`, …) for driving live testbed sessions from inside Claude Code.
+
+## Quick start
+
+```js
+import { start, send, kill } from 'claude-code-testbed';
+import { expect, test, afterEach } from 'vitest';
+
+let session;
+afterEach(() => session && kill(session.id));
+
+test('agent edits foo.mjs', async () => {
+  session = await start();
+  await send(session.id, 'edit foo.mjs to add a header comment');
+
+  await expect(session).toHaveCalledTool('Edit', { input: { file_path: /foo\.mjs/ } });
+  await expect(session).toHaveTouchedFile('foo.mjs', { content: /header/ });
+  await expect(session).toHaveReachedIdle({ within: 30_000 });
+});
+```
+
+## Authentication
+
+A testbed session is a real `claude` process. By default it inherits your normal Claude Code login — the same OAuth/subscription credentials (or API key) the `claude` CLI uses interactively. If you can run `claude` in a terminal, the testbed works. No extra configuration.
+
+The one exception is `bare: true` (see [`start()`](#startopts--id-tmuxname-jsonlpath)), which runs `claude --bare`: a minimal mode that skips hooks, plugin sync, and keychain reads, and accepts **only** `ANTHROPIC_API_KEY`. Use it for hermetic, CI-style runs where you want to pin auth to an explicit key — otherwise leave it off.
 
 ## API
 
@@ -50,7 +76,7 @@ Spawn a fresh Claude Code session under tmux and wait for the input prompt.
 | `projectDir` | `process.cwd()` | Directory Claude Code opens |
 | `pluginDir` | `projectDir` | Directory containing `.claude-plugin/` |
 | `model` | `"haiku"` | Host model (haiku is cheapest, fastest) |
-| `bare` | `true` | `true` requires `ANTHROPIC_API_KEY`; `false` uses OAuth |
+| `bare` | `false` | `false` inherits your Claude Code login; `true` runs `claude --bare` (API-key-only auth) |
 | `name` | `null` | Human label shown in `list()` and `tmux ls` |
 
 ### `send(id, text)` → `Promise<void>`
@@ -68,7 +94,7 @@ Block until the session is idle — last event is a turn-completion type and no 
 | Option | Default | Description |
 |--------|---------|-------------|
 | `timeoutMs` | `60000` | Hard timeout (throws on expiry) |
-| `idleMs` | `2000` | Quiet-period before declaring idle |
+| `idleMs` | `2000` | Quiet period before declaring idle |
 
 ### `events(id, opts?)` → `Promise<object[]>`
 
@@ -92,7 +118,7 @@ List sessions from the registry, pruning any whose tmux session no longer exists
 
 ## Assertions
 
-> Requires `claude-code-testbed@^0.3.0`
+> Available since `claude-code-testbed@0.3.0`.
 
 A slim set of 10 Vitest custom matchers for asserting on a recorded session. Register them once in your Vitest config:
 
@@ -139,7 +165,7 @@ All matchers auto-wait for the session to reach idle before reading; pass `{ wai
 | `toHaveEvent(predicate, opts?)` | Escape hatch — any JSONL event matches |
 | `toMatchTranscriptSnapshot({ normalize? })` | Semantic snapshot (timestamps/ids/text stripped) |
 
-Matchers accept either the `{ id, ... }` object from `start()` or a bare `id` string. Input matchers accept string (strict equality), `RegExp` (test), object (deep partial), or function `(value) => boolean`.
+Matchers accept either the `{ id, ... }` object from `start()` or a bare `id` string. Input matchers accept a string (strict equality), `RegExp` (test), object (deep partial), or function `(value) => boolean`.
 
 ## CLI
 
@@ -172,6 +198,8 @@ npx claude-code-testbed kill <id>
 npx claude-code-testbed list
 ```
 
+Pass `--bare` to `start` for API-key-only auth (see [Authentication](#authentication)).
+
 ## Usage in tests
 
 ```js
@@ -200,7 +228,10 @@ it('my plugin responds to /my-command', async () => {
 });
 ```
 
-**Always `waitIdle` before reading events** — the JSONL is written asynchronously. **Always `kill` in `afterEach`** — dangling sessions pile up in `tmux ls` as `testbed-<id>`.
+Two rules that save you grief:
+
+- **Always `waitIdle` before reading events** — the JSONL is written asynchronously, so reading mid-turn gives a partial transcript.
+- **Always `kill` in `afterEach`** — dangling sessions pile up in `tmux ls` as `testbed-<id>`.
 
 ## When to use vs. unit tests
 

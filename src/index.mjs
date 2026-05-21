@@ -22,7 +22,7 @@ function tmuxNameFromId(id) {
  * @param {string} [opts.projectDir]   default: process.cwd()
  * @param {string} [opts.pluginDir]    default: projectDir
  * @param {string} [opts.model]        default: "haiku"
- * @param {boolean} [opts.bare]        default: true
+ * @param {boolean} [opts.bare]        default: false
  * @param {string} [opts.name]         optional human label
  * @returns {Promise<{id: string, tmuxName: string, jsonlPath: string}>}
  */
@@ -30,7 +30,7 @@ export async function start(opts = {}) {
   const projectDir = opts.projectDir ?? process.cwd();
   const pluginDir = opts.pluginDir ?? projectDir;
   const model = opts.model ?? 'haiku';
-  const bare = opts.bare ?? true;
+  const bare = opts.bare ?? false;
   const name = opts.name ?? null;
 
   const id = randomUUID();

@@ -50,4 +50,4 @@ kill({id})
 
 ## If tools fail
 
-Run `/claude-code-testbed:setup` to probe prerequisites (tmux, `claude` CLI on PATH, `ANTHROPIC_API_KEY`). The output is structured JSON.
+Run `/claude-code-testbed:setup` to probe prerequisites (tmux, `claude` CLI on PATH). The output is structured JSON.
