@@ -1,6 +1,6 @@
 {
   "name": "claude-code-testbed",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Programmatic test harness for Claude Code plugins — spawns real Claude Code sessions under tmux",
   "type": "module",
   "exports": {
@@ -61,6 +61,8 @@
     "vitest": ">=1"
   },
   "peerDependenciesMeta": {
-    "vitest": { "optional": true }
+    "vitest": {
+      "optional": true
+    }
   }
 }
