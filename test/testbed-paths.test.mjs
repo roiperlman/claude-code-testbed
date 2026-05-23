@@ -12,8 +12,23 @@ describe('encodeProjectDir', () => {
     expect(encodeProjectDir('/Users/x/foo/')).toBe('-Users-x-foo-');
   });
 
-  it('handles paths with dots and dashes', () => {
-    expect(encodeProjectDir('/a/b.c/d-e')).toBe('-a-b.c-d-e');
+  it('replaces dots with dashes', () => {
+    // Claude Code 2.1.150 encodes `.` to `-` in addition to `/`. Verified
+    // empirically against ~/.claude/projects/ on macOS.
+    expect(encodeProjectDir('/a/b.c/d-e')).toBe('-a-b-c-d-e');
+  });
+
+  it('encodes /. segments as -- (dot-prefixed hidden dirs)', () => {
+    // Regression: a project dir like `/home/user/.local/tmp` lands at
+    // `-home-user--local-tmp` in ~/.claude/projects, NOT `-home-user-.local-tmp`.
+    // Without this, lib.tail polls the wrong JSONL path and hangs forever.
+    expect(encodeProjectDir('/home/user/.local/tmp')).toBe('-home-user--local-tmp');
+    expect(encodeProjectDir('/repo/.git/worktrees/x')).toBe('-repo--git-worktrees-x');
+  });
+
+  it('preserves existing hyphens, digits, and case', () => {
+    expect(encodeProjectDir('/srv/my-project-name')).toBe('-srv-my-project-name');
+    expect(encodeProjectDir('/private/tmp/job-AbC123XyZ')).toBe('-private-tmp-job-AbC123XyZ');
   });
 });
 
