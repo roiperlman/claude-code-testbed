@@ -1,3 +1,10 @@
+## [0.5.1](https://github.com/roiperlman/claude-code-testbed/compare/v0.5.0...v0.5.1) (2026-05-23)
+
+
+### Bug Fixes
+
+* **paths:** encode `.` as `-` in encodeProjectDir ([#6](https://github.com/roiperlman/claude-code-testbed/issues/6)) ([50101f0](https://github.com/roiperlman/claude-code-testbed/commit/50101f07ba67c2dc0658c84f61583b17a2d8524a))
+
 # [0.5.0](https://github.com/roiperlman/claude-code-testbed/compare/v0.4.0...v0.5.0) (2026-05-21)
 
 
