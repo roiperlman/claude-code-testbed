@@ -1,3 +1,10 @@
+## [0.5.2](https://github.com/roiperlman/claude-code-testbed/compare/v0.5.1...v0.5.2) (2026-05-28)
+
+
+### Bug Fixes
+
+* **marketplace:** use './' instead of '.' for plugin source (ROI-58) ([#8](https://github.com/roiperlman/claude-code-testbed/issues/8)) ([2a2a72f](https://github.com/roiperlman/claude-code-testbed/commit/2a2a72fcab24219f28c94d740b3483430cf76993)), closes [roiperlman/cursed#20](https://github.com/roiperlman/cursed/issues/20)
+
 ## [0.5.1](https://github.com/roiperlman/claude-code-testbed/compare/v0.5.0...v0.5.1) (2026-05-23)
 
 
