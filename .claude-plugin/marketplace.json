@@ -10,7 +10,7 @@
     {
       "name": "claude-code-testbed",
       "description": "Drive real Claude Code sessions under tmux from your tests — start a session, send messages and slash commands, read back the JSONL transcript, and assert on it from Vitest.",
-      "source": ".",
+      "source": "./",
       "category": "development"
     }
   ]
