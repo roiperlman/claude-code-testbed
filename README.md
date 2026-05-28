@@ -30,11 +30,12 @@ npm install -D claude-code-testbed
 
 For live, in-conversation debugging of a plugin you're developing — instead of (or alongside) the npm library in tests:
 
-```bash
-/plugin install github:roiperlman/claude-code-testbed
+```
+/plugin marketplace add roiperlman/claude-code-testbed
+/plugin install claude-code-testbed@claude-code-testbed
 ```
 
-Then run `/claude-code-testbed:setup` to verify prerequisites. The plugin registers an MCP server with tools (`start`, `slash`, `wait_idle`, `events`, `kill`, …) for driving live testbed sessions from inside Claude Code.
+Restart Claude Code, then run `/claude-code-testbed:setup` to verify prerequisites. The plugin registers an MCP server with tools (`start`, `slash`, `wait_idle`, `events`, `kill`, …) for driving live testbed sessions from inside Claude Code. The MCP server itself is fetched from npm via `npx` on first use — no manual `npm install` in the plugin directory is required.
 
 ## Quick start
 
