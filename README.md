@@ -35,7 +35,7 @@ For live, in-conversation debugging of a plugin you're developing — instead of
 /plugin install claude-code-testbed@claude-code-testbed
 ```
 
-Restart Claude Code, then run `/claude-code-testbed:setup` to verify prerequisites. The plugin registers an MCP server with tools (`start`, `slash`, `wait_idle`, `events`, `kill`, …) for driving live testbed sessions from inside Claude Code. The MCP server itself is fetched from npm via `npx` on first use — no manual `npm install` in the plugin directory is required.
+Restart Claude Code, then run `/claude-code-testbed:setup` to verify prerequisites. The plugin registers an MCP server with eight tools (`start`, `send`, `slash`, `wait_idle`, `events`, `pane`, `kill`, `list`) for driving live testbed sessions from inside Claude Code, and bundles a `using-testbed` skill that teaches the agent when to reach for them. The MCP server itself is fetched from npm via `npx` on first use — no manual `npm install` in the plugin directory is required.
 
 ## Quick start
 
